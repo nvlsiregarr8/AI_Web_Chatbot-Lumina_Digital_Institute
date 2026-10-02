@@ -1,0 +1,160 @@
+{
+  "name": "AI_Web_Chatbot_Google_Sheets_Gemini",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Saya Asisten Layanan Lumina Digital Institute. Ada yang bisa saya bantu mengenai informasi produk pelatihan dan harga?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e8b2f6f7-7bd5-4d8f-b464-4e0f45e74000",
+      "name": "When chat message received",
+      "webhookId": "6fbb38a9-7c63-476c-8140-646f69a52d3d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Peran (Role)\nKamu adalah Asisten Layanan Informasi Produk dan Biaya dari Lumina Digital Institute.\n\n# Tugas (Task)\nTugas utamamu adalah membantu pengguna memberikan informasi akurat mengenai program pelatihan, deskripsi materi, serta biaya/harga kursus di Lumina Digital Institute.\n\n# Penggunaan Tool\nKamu WAJIB mengambil data produk dan harga yang valid menggunakan Tool \"Get row(s) in sheet in Google Sheets\".\n\n# Batasan (Constraints)\n1. Jika informasi produk atau harga tidak ditemukan di dalam data Google Sheets, jangan mengarang jawaban. Jawab secara jujur: \"Maaf, saya tidak menemukan data program atau harga yang Anda cari. Silakan kunjungi situs resmi kami di luminadigital.id.\"\n2. Batasi panjang jawaban maksimal 200 kata.\n3. Selalu ingat konteks percakapan sebelumnya untuk memberikan respon yang berkesinambungan.\n\n# Gaya Bahasa (Tone)\nGunakan Bahasa Indonesia yang ramah, profesional, komunikatif, dan terstruktur rapi."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a3af89b6-3418-4bdf-90e8-ba703e9aaf21",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        208
+      ],
+      "id": "a5ede1c6-8364-4be5-b22a-cab0ec617803",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "MQAl15bBk8IAnON5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        208
+      ],
+      "id": "97c1c6d6-9c3d-48cd-a649-f87dfc15fd29",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_KzQQk7lG8qSb8TSl2WzamQo_h5_NOSCcsE2Gac1j0M",
+          "mode": "list",
+          "cachedResultName": "Katalog Produk Lumina Digital Institute",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_KzQQk7lG8qSb8TSl2WzamQo_h5_NOSCcsE2Gac1j0M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_KzQQk7lG8qSb8TSl2WzamQo_h5_NOSCcsE2Gac1j0M/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        208
+      ],
+      "id": "a9bbfa55-e2fa-4aa7-90e7-cefe1edb9f7d",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8vNoZFmv8cOUxOzn",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "30cdfbcd-00db-4d2c-a08c-f0423c8fcb0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c921119420819f1ac9bf9d6ee092ed06e6b3be577c82578c7ef1d4850cafdc38"
+  },
+  "nodeGroups": [],
+  "id": "9vNRuAbm9LVFxsWc",
+  "tags": []
+}
